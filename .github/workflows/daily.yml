@@ -1,0 +1,21 @@
+name: Daily Horror Story
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Runs daily at 2 AM UTC
+  workflow_dispatch:     # Lets you test manually
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python & FFmpeg
+        run: |
+          sudo apt update
+          sudo apt install -y ffmpeg
+          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib gTTS requests
+      - name: Restore YouTube Token
+        run: echo "${{ secrets.TOKEN_PICKLE }}" | base64 --decode > token.pickle
+      - name: Run Horror Bot
+        run: python bot.py
